@@ -46,21 +46,21 @@ module.exports = {
                         }
             },
             {
-                test: /\.(png|svg|jpg|gif)$/,
+                test: /\.(png|svg|jpg|gif|mp3)$/,
                     use: [
-                        "file-loader"
+                        "file-loader?name=./res/[name].[ext]"
                     ]
             }
         ]
     },
     plugins: [
         new HtmlWebPackPlugin({
-            template: "./src/home.html",
+            template: "./src/views/home.html",
             filename: "home.html",
             chunks: ['home']
         }),
         new HtmlWebPackPlugin({
-            template: "./src/chat.html",
+            template: "./src/views/chat.html",
             filename: "chat.html",
             chunks: ['chat']
         }),
