@@ -20,21 +20,25 @@ body{
 }
 
 .startWindow{
-    width: 400px;
+    width: 420px;
     height: auto;
-    margin-top: 10vh;
+    // margin-top: 10vh;
     text-align: center;
     color: #ff97ab;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
     .startWindow__logo{
-        height: 30rem;
+        height: 33rem;
         width: auto;
     }
     .button{
         display: block;
-        margin: 2rem auto;
+        margin-top: 2vh;
         padding: 1rem;
-        width: 25rem;
-        height: 3rem;
+        width: 35rem;
+        min-height: 3rem;
         border-radius: 30px;
         border: solid 3px #ff97ab;
         font-size: 2.5rem;
@@ -42,16 +46,93 @@ body{
         font-family: 'Gamja Flower', cursive;
         font-family: 'Short Stack', cursive;
         transition: height 300ms ease;
+        // animation: stretch 0.3s;
         overflow: hidden;
+        .button__title{
+            width: 100%;
+            cursor: pointer;
+        }
+        .form{
+            height: 0;
+            width: 100%;
+            // transition: height ease 0.3s;
+            form{
+                width: 100%;
+                input, button{
+                    padding: 1rem;
+                    margin-top: 2rem;
+                    font-size: 2rem;
+                    color: #ff97ab;
+                    border-radius: 20px;
+                    border: solid 3px #f096a8;
+                    outline: none;
+                }
+                input{
+                    width: 90%;
+                }
+                button{
+                    margin-top: 3rem;
+                    width: 100%;
+                    cursor: pointer;
+                }
+                button:hover{
+                    color: #fff;
+                    background-color: #f096a8
+                }
+            }
+        }
+        .login--open{
+            height: 21.7rem;
+            animation: loginOpen 0.3s;
+        }
+        .login--close{
+            height: 0px;
+            animation: loginClose 0.3s;
+        }
+        .register--open{
+            height: 63.8rem;
+            animation: registerOpen 0.3s;
+        }
+        .register--close{
+            height: 0px;
+            animation: registerClose 0.3s;
+        }
     }
+}
+
+@keyframes loginOpen {
+    0% { height: 0; }
+    75% { height: 22.7rem; }
+    95% { height:20.7rem; }
+    100% { height: 21.7rem; }
+}
+
+@keyframes loginClose {
+    0% { height: 21.7rem; }
+    5% { height: 22.1rem; }
+    75% { height: 0px; }
+    95% { height: 5px; }
+    100% { height:0; }
+}
+
+@keyframes registerOpen {
+    0% { height: 0; }
+    75% { height: 65.4rem; }
+    95% { height: 62.8rem; }
+    100% { height: 63.8rem; }
+}
+
+@keyframes registerClose {
+    0% { height: 63.8rem; }
+    5% { height: 64.4rem; }
+    75% { height: 0px; }
+    95% { height: 5px; }
+    100% { height:0; }
 }
 
 
 
-
-
 .startWindow__mainTitle{
-    text-align: center;
     margin-top: 2rem;
     margin-bottom: 0rem;
     font-size: 6rem;
@@ -59,7 +140,61 @@ body{
 }
 
 .startWindow__subTitle{
-    margin-bottom: 4rem;
+    margin-bottom: 2vh;
     font-size: 2.5rem;
     font-weight: 400;
+}
+
+@media only screen and (max-width: 500px){
+    .startWindow{
+        width: 100%;
+        margin-top: 2vh;
+        .startWindow__logo{
+            width: 80%;
+            height: auto;
+        }
+        .startWindow__mainTitle{
+            margin-top: 0;
+        }
+        .startWindow__subTitle{
+            margin-bottom: 0;
+        }
+        .button{
+            width: 80%;
+            margin: 1rem auto;
+        }
+    }
+}
+
+@media only screen and (max-width: 370px){
+    .startWindow{
+        
+        .startWindow__logo{
+           
+        }
+        .startWindow__mainTitle{
+            margin-top: 0;
+        }
+        .startWindow__subTitle{
+            font-size: 2rem;
+        }
+        .button{
+            width: 80%;
+            margin: 0.7rem auto;
+            font-size: 2.3rem;
+            padding: 0.8rem;
+        }
+    }
+}
+
+@media only screen and (max-height: 700px){
+    .startWindow{
+        .startWindow__logo{
+            height: 38vh;
+            width: auto;
+        }
+        .startWindow__mainTitle{
+            margin-top: -1rem;
+        }
+    }
 }
