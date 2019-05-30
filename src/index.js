@@ -9,7 +9,11 @@ $('.button__title').on('click', function(){
     let login = $(this).parent('.button').hasClass('button--login');
     let register = $(this).parent('.button').hasClass('button--register');
 
+    let audio = new Audio('./res/meow.mp3');
+    audio.play();
+
     if(login){
+        $('.button--register').find('.form').removeClass('register--open');
         let loginForm = $(this).parent('.button').find('.form');
         if(loginForm.hasClass('login--open')){
             loginForm.removeClass('login--open');
@@ -21,6 +25,7 @@ $('.button__title').on('click', function(){
     }
 
     if(register){
+        $('login--register').find('.form').removeClass('login--open');
         let registerForm = $(this).parent('.button').find('.form');
         if(registerForm.hasClass('register--open')){
             registerForm.removeClass('register--open');

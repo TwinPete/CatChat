@@ -198,3 +198,30 @@ body{
         }
     }
 }
+
+
+/* Chat-site */
+
+
+.catchat{
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    .signals{
+        display: flex;
+    }
+    .myId, .otherId{
+        height: 200px;
+        width: 400px;
+        margin: 20px;
+        resize: none;
+    }
+    .video{
+        video{
+            width: 600px;
+            height: 400px;
+        }
+    }
+}
