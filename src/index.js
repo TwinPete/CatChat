@@ -1,9 +1,19 @@
 import '././scss/main.scss';
-import * as name from "./modules/base.js";
+import * as name from "./modules/firebase.js";
 require('./views/audio/meow.mp3');
 import $ from "jquery";
+import firebase from 'firebase/app';
+import 'firebase/database';
+import { firebaseConfig } from "./modules/firebase.js"
 
 console.log('CatChat');
+
+firebase.initializeApp(firebaseConfig);
+
+let database = firebase.database();
+
+
+
 
 $('.button__title').on('click', function(){
     let login = $(this).parent('.button').hasClass('button--login');
@@ -36,4 +46,16 @@ $('.button__title').on('click', function(){
         }
     }
     
+});
+
+$('.form--login .submit').on('click', function(e){
+
+    e.preventDefault();
+
+    let username = $('.login__username').val();
+
+    // let user = database.ref(username);
+    localStorage.setItem('username', username);
+
+    window.location.href = "http://localhost:8080/dist/chat.html";
 });
