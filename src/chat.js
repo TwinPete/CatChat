@@ -124,6 +124,7 @@ navigator.getMedia({video: true, audio: false}, function(stream){
 
     $('.chat__sendButton').on('click', function(){
         let text = $('.chat__input').val();
+        $('.chat__input').val('');
         let date = new Date();
         let day = date.getDate();
         let month = date.getMonth();
@@ -141,43 +142,19 @@ navigator.getMedia({video: true, audio: false}, function(stream){
             date: day + ':' + month + ':' + year,
             time: hours + ':' + minutes + ':' + minutes + ':' + milliseconds
         }
-        if(type){
+        if(type == 'first'){
             let messages = database.ref('messages/' + username + '--' + contact);
             messages.push(message);
-            // messages.on('value', pushMessage, errData);
 
         }else{
             let messagesSwitch = database.ref('messages/' + contact + '--' + username);
             messagesSwitch.push(message);
-            // messagesSwitch.on('value', pushMessage, errData);
         }
 
 
     });
 
-    function pushMessage(data){
-        let values = data.val();
-        let keys = Object.keys(values);
-        console.log('here comes the values');
-        console.log(keys);
-        let key = keys.length - 1;
-        let text = values[key].text;
-        let from = values[key].from;
-        let date = values[key].date;
-        let time = values[key].time;
-        let type= 'message';
 
-        if(from != username){
-            type = 'message message--ownMessage';
-        }
-
-        $('.chat__main').append('<div class="'+ type +'">\n' +
-            '<div class="message__body">\n' +
-            '    <div class="message__userpic"></div>\n' +
-            '    <div class="message__text">' + text + '</div>\n' +
-            '</div>\n' +
-            '</div>');
-    }
 
 
     $('.chat__header').on('click', function(){
