@@ -46,10 +46,16 @@ module.exports = {
                         }
             },
             {
-                test: /\.(png|svg|jpg|gif|mp3)$/,
+                test: /\.(png|svg|jpg|gif)$/,
                     use: [
-                        "file-loader?name=./res/[name].[ext]"
+                        "file-loader?name=./images/[name].[ext]"
                     ]
+            },
+            {
+                test: /\.(mp3)$/,
+                use: [
+                    "file-loader?name=./audio/[name].[ext]"
+                ]
             }
         ]
     },

@@ -10,8 +10,9 @@ require('./views/audio/ringtone.mp3');
 
 
 
+
 navigator.getMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
-navigator.getMedia({video: true, audio: false}, function(stream){
+navigator.getMedia({video: true, audio: true}, function(stream){
 
 
     firebase.initializeApp(firebaseConfig);
@@ -28,7 +29,7 @@ navigator.getMedia({video: true, audio: false}, function(stream){
     let callCanceled = database.ref(username +'/call--canceled');
     let callTimeout = database.ref(username +'/call--timeout');
     let vendorUrl = window.URL || window.webkitURL;
-    let ringtone = new Audio('./res/ringtone.mp3');
+    let ringtone = new Audio('./audio/ringtone.mp3');
 
     initializeUI();
 
@@ -45,8 +46,12 @@ navigator.getMedia({video: true, audio: false}, function(stream){
                 console.log(keys);
 
                 keys.forEach(function(key){
-                    let username = vals[key].username;
-                    $('.contacts__list').append('<div class="contacts__contact"><div class="contacts__userpic"></div><div class="contacts__username" data-username="'+ username +'">' + username + '</div></div>');
+                    let contactname = vals[key].username;
+                    if(contactname === username)
+                    {
+                        return;
+                    }
+                        $('.contacts__list').append('<div class="contacts__contact"><div class="contacts__userpic"></div><div class="contacts__username" data-username="'+ contactname +'">' + contactname + '</div></div>');
                 });
 
                 $('.contacts__contact').on('click', function(){
@@ -111,7 +116,7 @@ navigator.getMedia({video: true, audio: false}, function(stream){
                 type = 'message message--ownMessage';
             }
 
-            $('.chat__main').append('<div class="'+ type +'">\n' +
+            $('.chat__messageWrapper').append('<div class="'+ type +'">\n' +
                 '<div class="message__body">\n' +
                 '    <div class="message__userpic"></div>\n' +
                 '    <div class="message__text">' + text + '</div>\n' +
@@ -248,6 +253,11 @@ navigator.getMedia({video: true, audio: false}, function(stream){
                 let code = JSON.parse(requestCode);
                 peer.signal(code);
             }
+
+
+
+            // callAccept.remove();
+            // callRequest.remove();
 
 
         }

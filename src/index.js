@@ -19,7 +19,7 @@ $('.button__title').on('click', function(){
     let login = $(this).parent('.button').hasClass('button--login');
     let register = $(this).parent('.button').hasClass('button--register');
 
-    let audio = new Audio('./res/meow.mp3');
+    let audio = new Audio('./audio/meow.mp3');
     audio.play();
 
     if(login){
