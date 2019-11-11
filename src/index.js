@@ -57,5 +57,6 @@ $('.form--login .submit').on('click', function(e){
     // let user = database.ref(username);
     localStorage.setItem('username', username);
 
-    window.location.href = "http://localhost:8080/dist/chat.html";
+    // window.location.href = "http://localhost:8080/dist/chat.html";
+    window.location.href = "https://catchat-1af46.firebaseapp.com/chat.html";
 });

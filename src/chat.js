@@ -19,17 +19,18 @@ navigator.getMedia({video: true, audio: true}, function(stream){
 
 
 
-    let database = firebase.database();
-    let users = database.ref('users');
-    let username = localStorage.getItem('username');
-    let contacts = database.ref(username + '/contacts');
-    let callRequest = database.ref(username + '/call--request');
-    let callAccept = database.ref(username +'/call--accept');
-    let callRefused = database.ref(username +'/call--refused');
-    let callCanceled = database.ref(username +'/call--canceled');
-    let callTimeout = database.ref(username +'/call--timeout');
-    let vendorUrl = window.URL || window.webkitURL;
-    let ringtone = new Audio('./audio/ringtone.mp3');
+    let database = firebase.database(),
+        users = database.ref('users'),
+        username = localStorage.getItem('username'),
+        contacts = database.ref(username + '/contacts'),
+        callRequest = database.ref(username + '/call--request'),
+        callAccept = database.ref(username +'/call--accept'),
+        callRefused = database.ref(username +'/call--refused'),
+        callCanceled = database.ref(username +'/call--canceled'),
+        callTimeout = database.ref(username +'/call--timeout'),
+        callFinished = database.ref(username +'/call--finished'),
+        vendorUrl = window.URL || window.webkitURL,
+        ringtone = new Audio('./audio/ringtone.mp3');
 
     initializeUI();
 
@@ -130,22 +131,22 @@ navigator.getMedia({video: true, audio: true}, function(stream){
     $('.chat__sendButton').on('click', function(){
         let text = $('.chat__input').val();
         $('.chat__input').val('');
-        let date = new Date();
-        let day = date.getDate();
-        let month = date.getMonth();
-        let year = date.getFullYear();
-        let hours = date.getHours();
-        let minutes = date.getMinutes();
-        let seconds = date.getSeconds();
-        let milliseconds = date.getMilliseconds();
-        let contact = $('.chat__username').attr('data-username');
-        let type = localStorage.getItem('message-direction');
-        let message = {
+        let date = new Date(),
+        day = date.getDate(),
+        month = date.getMonth(),
+        year = date.getFullYear(),
+        hours = date.getHours(),
+        minutes = date.getMinutes(),
+        seconds = date.getSeconds(),
+        milliseconds = date.getMilliseconds(),
+        contact = $('.chat__username').attr('data-username'),
+        type = localStorage.getItem('message-direction'),
+        message = {
             from: username,
             to: contact,
             text: text,
             date: day + ':' + month + ':' + year,
-            time: hours + ':' + minutes + ':' + minutes + ':' + milliseconds
+            time: hours + ':' + minutes + ':' + minutes + ':' + seconds
         }
         if(type == 'first'){
             let messages = database.ref('messages/' + username + '--' + contact);
@@ -162,7 +163,7 @@ navigator.getMedia({video: true, audio: true}, function(stream){
 
 
 
-    $('.chat__header').on('click', function(){
+    $('.chat__makeCall').on('click', function(){
 
         $('.videochat').addClass('videochat--open');
 
@@ -215,15 +216,37 @@ navigator.getMedia({video: true, audio: true}, function(stream){
                 }
             }, errData);
 
+            // $('.videochat__close').on('click', function(){
+            //     closeCallWindow();
+            //     let contactName = $('.chat__username').text();
+            //     callCanceled = database.ref(contactName +'/call--canceled');
+            //     let canceled = {
+            //         time: '13:55'
+            //     }
+            //     callCanceled.push(canceled);
+            //     callRequest.remove();
+            // });
+
             $('.videochat__close').on('click', function(){
                 closeCallWindow();
-                let contactName = $('.chat__username').text();
-                callCanceled = database.ref(contactName +'/call--canceled');
-                let canceled = {
-                    time: '13:55'
+                if($('.videochat__requestWindow').length){
+                    callRefused = database.ref(contact + '/call--refused');
+                    let refused = {
+                        time: '13:55'
+                    }
+                    callRefused.push(refused);
+                }else{
+                    peer.removeStream(stream);
+                    peer.destroy();
+                    console.log('anruf beendet!!!');
+                    callFinished = database.ref(contact +'/call--finished');
+                    let finished = {
+                        time: '13:55'
+                    }
+                    callFinished.push(finished);
                 }
-                callCanceled.push(canceled);
-                callRequest.remove();
+
+
             });
 
             setTimeout(function(){
@@ -256,11 +279,13 @@ navigator.getMedia({video: true, audio: true}, function(stream){
 
 
 
-            // callAccept.remove();
-            // callRequest.remove();
+            callAccept.remove();
+            callRequest.remove();
 
 
         }
+
+        callFinished.on('value', gotCallFinished, errData);
 
         peer.on('stream', function(stream){
             let video = document.createElement('video');
@@ -270,9 +295,20 @@ navigator.getMedia({video: true, audio: true}, function(stream){
 
             video.srcObject = stream;
             video.play();
+
+
+
+            //
+            // callFinished.on('value', function(data){
+            //     closeCallWindow();
+            //     callFinished.remove();
+            // }, errData);
+
         });
 
     });
+
+
 
     // Wenn callRequest einen zusätzlichen Eintrag bekommt,
     // und der Eintrag an den anderen User adressiert ist
@@ -293,6 +329,7 @@ navigator.getMedia({video: true, audio: true}, function(stream){
         }
         ringtone.pause();
         ringtone.currentTime = 0
+        localStorage.setItem('init', 'false');
     }
 
 
@@ -310,12 +347,7 @@ navigator.getMedia({video: true, audio: true}, function(stream){
             let caller = vals[keys[0]].from;
             let requestCode = vals[keys[0]].code;
 
-            var Peer = require('simple-peer');
-            var peer = new Peer({
-                initiator: localStorage.getItem('init') === 'true',
-                trickle: false,
-                stream: stream
-            });
+
 
             $('.videochat__body').append(' <div class="videochat__requestWindow">\n' +
                 '                        <div class="videochat__caller"><div class="videochat__callerPic"></div><div class="videochat__callerName">twinPete93</div></div>\n' +
@@ -334,13 +366,35 @@ navigator.getMedia({video: true, audio: true}, function(stream){
                 }
             }, errData);
 
+            // $('.videochat__close').on('click', function(){
+            //     closeCallWindow();
+            //     callRefused = database.ref(caller + '/call--refused');
+            //     let refused = {
+            //         time: '13:55'
+            //     }
+            //     callRefused.push(refused);
+            // });
+
             $('.videochat__close').on('click', function(){
                 closeCallWindow();
-                callRefused = database.ref(caller + '/call--refused');
-                let refused = {
-                    time: '13:55'
+                if($('.videochat__requestWindow').length){
+                    callRefused = database.ref(caller + '/call--refused');
+                    let refused = {
+                        time: '13:55'
+                    }
+                    callRefused.push(refused);
+                }else{
+                    peer.removeStream(stream);
+                    peer.destroy();
+                    console.log('anruf beendet!!!');
+                    callFinished = database.ref(caller +'/call--finished');
+                    let finished = {
+                        time: '13:55'
+                    }
+                    callFinished.push(finished);
                 }
-                callRefused.push(refused);
+
+
             });
 
             $('.videochat__refuse').on('click', function(){
@@ -373,6 +427,13 @@ navigator.getMedia({video: true, audio: true}, function(stream){
                 ringtone.pause();
                 ringtone.currentTime = 0
 
+                let Peer = require('simple-peer');
+                let peer = new Peer({
+                    initiator: localStorage.getItem('init') === 'true',
+                    trickle: false,
+                    stream: stream
+                });
+
                 let code = JSON.parse(requestCode);
                 peer.signal(code);
 
@@ -398,12 +459,23 @@ navigator.getMedia({video: true, audio: true}, function(stream){
                     video.srcObject = stream;
                     video.play();
                 });
+
+                callFinished.on('value', gotCallFinished, errData);
             });
 
         }
 
     }
 
+    function gotCallFinished(data){
+        let vals = data.val();
+
+        if(vals != null){
+            console.log('call FInished');
+            closeCallWindow();
+            callFinished.remove();
+        }
+    }
 
 
     // Wenn callAccept einen zusätzlichen Eintrag bekommt,
@@ -413,7 +485,7 @@ navigator.getMedia({video: true, audio: true}, function(stream){
     
 
         // localStorage.setItem('init', 'true');
-        
+
        var Peer = require('simple-peer');
        var peer = new Peer({
        initiator: localStorage.getItem('init') === 'true',
